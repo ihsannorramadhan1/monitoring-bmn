@@ -14,6 +14,13 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                kemenkeu: {
+                    primary: '#005FAC', // Navy Blue
+                    secondary: '#FAB715', // Golden Yellow
+                    green: '#02A54F', // Green
+                }
+            }
         },
     },
 
