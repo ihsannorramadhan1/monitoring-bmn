@@ -30,9 +30,9 @@
 
             <!-- Title -->
             <div class="space-y-4">
-                <h2 class="text-xs font-bold tracking-[0.2em] text-kemenkeu-secondary uppercase">Sistem Monitoring</h2>
-                <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
-                    Agenda Persetujuan BMN
+                <h2 class="text-5xs font-bold tracking-[0.2em] text-kemenkeu-secondary uppercase">Sistem Monitoring</h2>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">
+                    Aplikasi Pengelolaan Agenda Persetujuan BMN Seksi Pengelolaan Kekayaan Negara di KPKNL Banjarmasin
                 </h1>
                 <p class="text-lg text-gray-500 mt-4 font-light">
                     KPKNL Banjarmasin — DJKN Kalimantan Selatan
