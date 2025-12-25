@@ -24,6 +24,12 @@ class AgendaSeeder extends Seeder
             return;
         }
 
+        // Truncate tables to start fresh
+        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
+        AgendaHistoryLog::truncate();
+        Agenda::truncate();
+        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
+
         $satkers = Satker::pluck('id')->toArray();
         $jenisPengelolaans = JenisPengelolaan::all(); // Need target_hari
         $staffUsers = User::where('role', 'staff')->pluck('id')->toArray();
@@ -35,10 +41,10 @@ class AgendaSeeder extends Seeder
 
         $faker = \Faker\Factory::create('id_ID');
 
-        $statuses = ['masuk', 'verifikasi', 'disposisi', 'proses', 'disetujui', 'ditolak'];
+        $statuses = ['masuk', 'verifikasi', 'review', 'disetujui', 'ditolak'];
 
-        // Create 50 Agendas
-        for ($i = 0; $i < 50; $i++) {
+        // Create 20 Agendas
+        for ($i = 0; $i < 20; $i++) {
             DB::transaction(function () use ($faker, $satkers, $jenisPengelolaans, $staffUsers, $statuses, $i) {
 
                 $jenis = $jenisPengelolaans->random();
@@ -60,15 +66,13 @@ class AgendaSeeder extends Seeder
                 elseif ($rand <= 50)
                     $status = 'ditolak'; // 10%
                 elseif ($rand <= 70)
-                    $status = 'proses'; // 20%
+                    $status = 'review'; // 20%
                 elseif ($rand <= 85)
                     $status = 'verifikasi'; // 15%
                 else
                     $status = 'masuk'; // 15%
 
-                // Overdue logic: if status is NOT completed, and target date is passed
-                // We want some overdue items.
-                // If we want to force an overdue item, we pick an old start date and a pending status.
+                // Overdue logic
                 if ($i % 10 == 0 && !in_array($status, ['disetujui', 'ditolak'])) {
                     // Force overdue every 10th item
                     $tanggalMasuk = Carbon::now()->subDays($targetHari + rand(5, 20));
@@ -80,7 +84,6 @@ class AgendaSeeder extends Seeder
 
                 if (in_array($status, ['disetujui', 'ditolak'])) {
                     // Completed items
-                    // Randomize if it was on time or late
                     $isLate = rand(0, 1) == 1;
                     if ($isLate) {
                         $tanggalSelesai = $tanggalTarget->copy()->addDays(rand(1, 10));
@@ -88,14 +91,12 @@ class AgendaSeeder extends Seeder
                         $tanggalSelesai = $tanggalTarget->copy()->subDays(rand(0, $targetHari - 1));
                     }
 
-                    // Ensure selesai is after masuk
                     if ($tanggalSelesai->lt($tanggalMasuk)) {
                         $tanggalSelesai = $tanggalMasuk->copy()->addDays(1);
                     }
 
                     $durasiHari = $tanggalMasuk->diffInDays($tanggalSelesai);
                 } else {
-                    // Pending items duration is current diff
                     $durasiHari = $tanggalMasuk->diffInDays(Carbon::now());
                 }
 
@@ -109,24 +110,23 @@ class AgendaSeeder extends Seeder
                     'status' => $status,
                     'notes' => $faker->sentence(),
                     'pic_id' => $picId,
-                    'file_uploads' => json_encode([]), // Empty files for seeder
+                    'file_uploads' => json_encode([]),
                     'durasi_hari' => $durasiHari,
                     'created_by' => $picId,
                 ]);
 
-                // Create History Logs based on status
-                // Always has 'masuk'
+                // Create History Logs
                 AgendaHistoryLog::create([
                     'agenda_id' => $agenda->id,
-                    'user_id' => $picId,
-                    'status_before' => null,
-                    'status_after' => 'masuk',
-                    'keterangan' => 'Agenda baru dibuat',
+                    'changed_by' => $picId,
+                    'status_old' => null,
+                    'status_new' => 'masuk',
+                    'notes' => 'Agenda baru dibuat',
                     'created_at' => $tanggalMasuk,
                 ]);
 
                 // If status advanced, add intermediate logs
-                $flow = ['masuk', 'verifikasi', 'disposisi', 'proses', 'disetujui']; // Simplified flow
+                $flow = ['masuk', 'verifikasi', 'review', 'disetujui'];
                 if ($status == 'ditolak')
                     $flow = ['masuk', 'verifikasi', 'ditolak'];
 
@@ -143,10 +143,10 @@ class AgendaSeeder extends Seeder
 
                         AgendaHistoryLog::create([
                             'agenda_id' => $agenda->id,
-                            'user_id' => $picId,
-                            'status_before' => $flow[$index - 1],
-                            'status_after' => $step,
-                            'keterangan' => 'Status updated to ' . ucfirst($step),
+                            'changed_by' => $picId,
+                            'status_old' => $flow[$index - 1],
+                            'status_new' => $step,
+                            'notes' => 'Status updated to ' . ucfirst($step),
                             'created_at' => $currentStepDate,
                         ]);
                     }
