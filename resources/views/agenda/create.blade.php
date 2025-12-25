@@ -48,7 +48,7 @@
                                     <option value="">Pilih Jenis</option>
                                     @foreach($jenisPengelolaans as $jenis)
                                         <option value="{{ $jenis->id }}" data-target="{{ $jenis->target_hari }}" {{ old('jenis_pengelolaan_id') == $jenis->id ? 'selected' : '' }}>
-                                            {{ $jenis->nama_jenis }} ({{ $jenis->target_hari }} Hari)
+                                            {{ $jenis->nama_jenis }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -60,7 +60,8 @@
                                 <x-input-label for="tanggal_target_display" :value="__('Estimasi Tanggal Target')" />
                                 <x-text-input id="tanggal_target_display" class="block mt-1 w-full bg-gray-100"
                                     type="text" disabled />
-                                <p class="text-xs text-gray-500 mt-1">Dihitung otomatis berdasarkan jenis pengelolaan.
+                                <p class="text-xs text-gray-500 mt-1">Dihitung otomatis berdasarkan jenis pengelolaan
+                                    (hanya hari kerja).
                                 </p>
                             </div>
 
@@ -129,7 +130,17 @@
 
             if (targetHari > 0 && !isNaN(tanggalMasuk.getTime())) {
                 const targetDate = new Date(tanggalMasuk);
-                targetDate.setDate(targetDate.getDate() + targetHari);
+                let daysAdded = 0;
+
+                while (daysAdded < targetHari) {
+                    targetDate.setDate(targetDate.getDate() + 1);
+                    const dayOfWeek = targetDate.getDay();
+
+                    // 0 = Sunday, 6 = Saturday
+                    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                        daysAdded++;
+                    }
+                }
 
                 // Format to DD/MM/YYYY
                 const day = String(targetDate.getDate()).padStart(2, '0');

@@ -43,9 +43,9 @@
             <div class="mt-12">
                 @if (Route::has('login'))
                     @auth
-                        <a href="{{ url('/dashboard') }}" class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-full text-white bg-kemenkeu-primary hover:bg-blue-800 md:text-lg transition duration-300 ease-in-out shadow-lg hover:shadow-xl">
-                            Dashboard
-                            <svg class="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                        <a href="{{ route('login') }}" class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-full text-white bg-kemenkeu-primary hover:bg-blue-800 md:text-lg transition duration-300 ease-in-out shadow-lg hover:shadow-xl group">
+                            Masuk Aplikasi
+                            <svg class="ml-2 -mr-1 w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                         </a>
                     @else
                         <a href="{{ route('login') }}" class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-full text-white bg-kemenkeu-primary hover:bg-blue-800 md:text-lg transition duration-300 ease-in-out shadow-lg hover:shadow-xl group">

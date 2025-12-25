@@ -80,10 +80,13 @@
 
 <body>
     <div class="header">
-        <h1>Kementerian Keuangan Republik Indonesia</h1>
-        <h2>Direktorat Jenderal Kekayaan Negara</h2>
-        <h2>Kantor Pelayanan Kekayaan Negara dan Lelang Banjarmasin</h2>
-        <p>Jl. Pramuka No. 7, Banjarmasin, Kalimantan Selatan</p>
+        @php
+            $orientation = $orientation ?? 'portrait';
+            $imgStyle = $orientation === 'portrait'
+                ? 'width: 100%; height: auto; margin: 0 auto;'
+                : 'width: 75%; height: 19%; margin-left: 0px; margin-right: 170px;';
+        @endphp
+        <img src="{{ public_path('images/kop.jpg') }}" alt="Kop Surat" style="{{ $imgStyle }}">
     </div>
 
     <div class="content">
@@ -98,4 +101,4 @@
     </div>
 </body>
 
-</html>
+</html

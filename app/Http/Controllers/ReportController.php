@@ -64,8 +64,9 @@ class ReportController extends Controller
 
         $agendas = $query->orderBy('tanggal_masuk', 'desc')->get();
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.daftar-agenda', compact('agendas'))
-            ->setPaper('a4', 'landscape');
+        $orientation = 'landscape';
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.daftar-agenda', compact('agendas', 'orientation'))
+            ->setPaper('a4', $orientation);
 
         return $pdf->stream('laporan-daftar-agenda.pdf');
     }
@@ -134,8 +135,9 @@ class ReportController extends Controller
             ];
         });
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.status-persetujuan', compact('data', 'total'))
-            ->setPaper('a4', 'portrait');
+        $orientation = 'portrait';
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.status-persetujuan', compact('data', 'total', 'orientation'))
+            ->setPaper('a4', $orientation);
 
         return $pdf->stream('laporan-status-persetujuan.pdf');
     }
@@ -228,8 +230,9 @@ class ReportController extends Controller
 
         $overdueAgendas = $overdueQuery->orderBy('durasi_hari', 'desc')->limit(20)->get();
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.durasi-proses', compact('data', 'overdueAgendas'))
-            ->setPaper('a4', 'portrait');
+        $orientation = 'portrait';
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.durasi-proses', compact('data', 'overdueAgendas', 'orientation'))
+            ->setPaper('a4', $orientation);
 
         return $pdf->stream('laporan-analisis-durasi.pdf');
     }
@@ -325,8 +328,9 @@ class ReportController extends Controller
             ['total', 'desc'],
         ])->values();
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.performance-satker', compact('rankedData'))
-            ->setPaper('a4', 'portrait');
+        $orientation = 'portrait';
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.performance-satker', compact('rankedData', 'orientation'))
+            ->setPaper('a4', $orientation);
 
         return $pdf->stream('laporan-performance-satker.pdf');
     }
@@ -468,8 +472,9 @@ class ReportController extends Controller
             ->orderBy('tanggal_masuk', 'asc')
             ->first();
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.executive-summary', compact('kpi', 'trends', 'topSatkers', 'mostDelayedJenis', 'longestPending'))
-            ->setPaper('a4', 'portrait');
+        $orientation = 'portrait';
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.executive-summary', compact('kpi', 'trends', 'topSatkers', 'mostDelayedJenis', 'longestPending', 'orientation'))
+            ->setPaper('a4', $orientation);
 
         return $pdf->stream('laporan-executive-summary.pdf');
     }

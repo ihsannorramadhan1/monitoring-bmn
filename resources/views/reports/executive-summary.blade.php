@@ -104,7 +104,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Top 5 Satker -->
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold mb-4 text-blue-800">🏆 Top 5 Most Active Satker</h3>
+                    <h3 class="text-lg font-semibold mb-4 text-blue-800">Top 5 Most Active Satker</h3>
                     <ul class="space-y-3">
                         @forelse($topSatkers as $index => $item)
                             <li class="flex items-center justify-between border-b pb-2">
@@ -125,7 +125,7 @@
 
                 <!-- Bottlenecks -->
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold mb-4 text-red-800">⚠️ Key Issues / Bottlenecks</h3>
+                    <h3 class="text-lg font-semibold mb-4 text-red-800">Key Issues / Bottlenecks</h3>
 
                     <div class="mb-4">
                         <div class="text-xs text-gray-500 uppercase font-bold mb-1">Most Delayed Jenis Pengelolaan</div>
