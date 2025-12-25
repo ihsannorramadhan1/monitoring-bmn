@@ -15,7 +15,9 @@
                 <th style="width: 10%;">Target</th>
                 <th style="width: 10%;">Status</th>
                 <th style="width: 10%;">PIC</th>
-                <th style="width: 5%;">Durasi</th>
+                @if(auth()->user()->role === 'admin')
+                    <th style="width: 5%;">Durasi</th>
+                @endif
             </tr>
         </thead>
         <tbody>
@@ -29,11 +31,14 @@
                     <td style="text-align: center;">{{ $agenda->tanggal_target->format('d/m/Y') }}</td>
                     <td style="text-align: center;">{{ ucfirst($agenda->status) }}</td>
                     <td>{{ $agenda->pic->name }}</td>
-                    <td style="text-align: center;">{{ $agenda->durasi_hari }}</td>
+                    @if(auth()->user()->role === 'admin')
+                        <td style="text-align: center;">{{ $agenda->durasi_hari }}</td>
+                    @endif
                 </tr>
             @empty
                 <tr>
-                    <td colspan="9" style="text-align: center;">Tidak ada data agenda.</td>
+                    <td colspan="{{ auth()->user()->role === 'admin' ? 9 : 8 }}" style="text-align: center;">Tidak ada data
+                        agenda.</td>
                 </tr>
             @endforelse
         </tbody>

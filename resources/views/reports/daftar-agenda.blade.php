@@ -112,8 +112,10 @@
                                         Status</th>
                                     <th class="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
                                         PIC</th>
-                                    <th class="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                                        Durasi</th>
+                                    @if(auth()->user()->role === 'admin')
+                                        <th class="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
+                                            Durasi</th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -132,11 +134,14 @@
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap">{{ ucfirst($agenda->status) }}</td>
                                         <td class="px-4 py-2 whitespace-nowrap">{{ $agenda->pic->name }}</td>
-                                        <td class="px-4 py-2 whitespace-nowrap">{{ $agenda->durasi_hari }} Hari</td>
+                                        @if(auth()->user()->role === 'admin')
+                                            <td class="px-4 py-2 whitespace-nowrap">{{ $agenda->durasi_hari }} Hari</td>
+                                        @endif
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="px-4 py-2 text-center text-gray-500">Tidak ada data agenda.
+                                        <td colspan="{{ auth()->user()->role === 'admin' ? 9 : 8 }}"
+                                            class="px-4 py-2 text-center text-gray-500">Tidak ada data agenda.
                                         </td>
                                     </tr>
                                 @endforelse

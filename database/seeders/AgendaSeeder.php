@@ -51,15 +51,7 @@ class AgendaSeeder extends Seeder
                 $satkerId = $faker->randomElement($satkers);
                 $picId = $faker->randomElement($staffUsers);
 
-                // Random date in last 6 months
-                $tanggalMasuk = Carbon::now()->subDays(rand(0, 180));
-
-                // Calculate target
-                $targetHari = $jenis->target_hari;
-                $tanggalTarget = $tanggalMasuk->copy()->addDays($targetHari);
-
-                // Determine status with weighted probability for realism
-                // More completed/processed items for better charts
+                // Determine status first to generate contextual dates
                 $rand = rand(1, 100);
                 if ($rand <= 40)
                     $status = 'disetujui'; // 40%
@@ -72,32 +64,53 @@ class AgendaSeeder extends Seeder
                 else
                     $status = 'masuk'; // 15%
 
-                // Overdue logic
-                if ($i % 10 == 0 && !in_array($status, ['disetujui', 'ditolak'])) {
-                    // Force overdue every 10th item
-                    $tanggalMasuk = Carbon::now()->subDays($targetHari + rand(5, 20));
-                    $tanggalTarget = $tanggalMasuk->copy()->addDays($targetHari);
-                }
-
+                $targetHari = $jenis->target_hari;
                 $tanggalSelesai = null;
                 $durasiHari = null;
 
+                // Date Generation Logic
                 if (in_array($status, ['disetujui', 'ditolak'])) {
-                    // Completed items
-                    $isLate = rand(0, 1) == 1;
-                    if ($isLate) {
-                        $tanggalSelesai = $tanggalTarget->copy()->addDays(rand(1, 10));
-                    } else {
+                    // COMPLETED: Can be historical (past 6 months)
+                    $tanggalMasuk = Carbon::now()->subDays(rand($targetHari + 2, 180));
+                    $tanggalTarget = $tanggalMasuk->copy()->addDays($targetHari);
+
+                    // Determine if finished early, on time, or late
+                    $finishScenario = rand(1, 100);
+                    if ($finishScenario <= 60) {
+                        // 60% On time or early
                         $tanggalSelesai = $tanggalTarget->copy()->subDays(rand(0, $targetHari - 1));
+                    } else {
+                        // 40% Late
+                        $tanggalSelesai = $tanggalTarget->copy()->addDays(rand(1, 10));
                     }
 
+                    // Safety: selesai cannot be before masuk
                     if ($tanggalSelesai->lt($tanggalMasuk)) {
                         $tanggalSelesai = $tanggalMasuk->copy()->addDays(1);
                     }
 
-                    $durasiHari = $tanggalMasuk->diffInDays($tanggalSelesai);
+
+                    // Use diffInWeekdays to exclude weekends
+                    $durasiHari = $tanggalMasuk->diffInWeekdays($tanggalSelesai);
+
                 } else {
-                    $durasiHari = $tanggalMasuk->diffInDays(Carbon::now());
+                    // PENDING: Should generally be recent (fresh items)
+                    // Default: entered 0 to 5 days ago (so duration is 0-5 days)
+                    $daysAgo = rand(0, 5);
+                    $tanggalMasuk = Carbon::now()->subDays($daysAgo);
+                    $tanggalTarget = $tanggalMasuk->copy()->addDays($targetHari);
+
+                    // OVERDUE LOGIC: Force some pending items to be old/overdue
+                    if ($i % 5 == 0) { // Every 5th item is overdue
+                        // Use weekdays for overdue calculation to be precise? 
+                        // Actually just setting the date is enough, duration calc handles it.
+                        $overdueDays = rand(5, 30);
+                        $tanggalMasuk = Carbon::now()->subDays($targetHari + $overdueDays);
+                        $tanggalTarget = $tanggalMasuk->copy()->addDays($targetHari);
+                    }
+
+                    // Use diffInWeekdays for pending items too
+                    $durasiHari = $tanggalMasuk->diffInWeekdays(Carbon::now());
                 }
 
                 $agenda = Agenda::create([
@@ -110,7 +123,7 @@ class AgendaSeeder extends Seeder
                     'status' => $status,
                     'notes' => $faker->sentence(),
                     'pic_id' => $picId,
-                    'file_uploads' => json_encode([]),
+                    'file_uploads' => [],
                     'durasi_hari' => $durasiHari,
                     'created_by' => $picId,
                 ]);
